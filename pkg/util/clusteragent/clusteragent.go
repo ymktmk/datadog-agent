@@ -96,6 +96,7 @@ func GetClusterAgentClient() (DCAClientInterface, error) {
 		})
 	}
 	if err := globalClusterAgentClient.initRetry.TriggerRetry(); err != nil {
+		log.Infof("ERROR 99 %d ", err)
 		log.Debugf("Cluster Agent init error: %v", err)
 		return nil, err
 	}
@@ -110,14 +111,21 @@ func (c *DCAClient) init() error {
 		return err
 	}
 
+	log.Infof("114 %d ", c.clusterAgentAPIEndpoint)
+
 	authToken, err := security.GetClusterAgentAuthToken()
 	if err != nil {
 		return err
 	}
 
+	log.Infof("121 %d ", authToken)
+
 	c.clusterAgentAPIRequestHeaders = http.Header{}
 	c.clusterAgentAPIRequestHeaders.Set(authorizationHeaderKey, fmt.Sprintf("Bearer %s", authToken))
 	podIP := config.Datadog.GetString("clc_runner_host")
+
+	log.Infof("127 %d ", podIP)
+
 	c.clusterAgentAPIRequestHeaders.Set(RealIPHeader, podIP)
 
 	if err := c.initHTTPClient(); err != nil {
